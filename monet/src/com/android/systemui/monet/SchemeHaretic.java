@@ -6,7 +6,9 @@ package com.android.systemui.monet;
 
 import com.google.ux.material.libmonet.dynamiccolor.ColorSpec.SpecVersion;
 import com.google.ux.material.libmonet.dynamiccolor.ColorSpecs;
+import com.google.ux.material.libmonet.dynamiccolor.DynamicColor;
 import com.google.ux.material.libmonet.dynamiccolor.DynamicScheme;
+import com.google.ux.material.libmonet.dynamiccolor.MaterialDynamicColors;
 import com.google.ux.material.libmonet.dynamiccolor.Variant;
 import com.google.ux.material.libmonet.hct.Hct;
 import com.google.ux.material.libmonet.palettes.TonalPalette;
@@ -18,7 +20,10 @@ import java.util.List;
  * theme takes its primary at tone 80, a pale tone of any saturated seed, so the R1's orange came
  * out salmon; here the primary palette keeps the seed's chroma and, dark, is shifted so its tone
  * 80 is the seed, the tones on and around it following (near black on it, a deep container).
- * The neutrals stay tonal spot's, faintly of the seed's hue.
+ * Everything else is neutral grey, the surfaces, the secondary roles and, by {@link #role}, the
+ * primary container, which takes the seed's colour for what is on it: the seed is the only
+ * colour, as the R1's orange body around its black screen. The tertiary and error stay tonal
+ * spot's.
  */
 public class SchemeHaretic extends DynamicScheme {
 
@@ -35,16 +40,30 @@ public class SchemeHaretic extends DynamicScheme {
                 platform,
                 specVersion,
                 primary(sourceColorHctList.get(0), isDark),
-                ColorSpecs.get(specVersion).getSecondaryPalette(Variant.TONAL_SPOT,
-                        sourceColorHctList.get(0), isDark, platform, contrastLevel),
+                grey(sourceColorHctList.get(0)),
                 ColorSpecs.get(specVersion).getTertiaryPalette(Variant.TONAL_SPOT,
                         sourceColorHctList.get(0), isDark, platform, contrastLevel),
-                ColorSpecs.get(specVersion).getNeutralPalette(Variant.TONAL_SPOT,
-                        sourceColorHctList.get(0), isDark, platform, contrastLevel),
-                ColorSpecs.get(specVersion).getNeutralVariantPalette(Variant.TONAL_SPOT,
-                        sourceColorHctList.get(0), isDark, platform, contrastLevel),
+                grey(sourceColorHctList.get(0)),
+                grey(sourceColorHctList.get(0)),
                 ColorSpecs.get(specVersion).getErrorPalette(Variant.TONAL_SPOT,
                         sourceColorHctList.get(0), isDark, platform, contrastLevel));
+    }
+
+    /**
+     * The color the haretic style gives the role {@code color} is: the primary container is a
+     * grey container, the color on it the primary, the seed. Others are as they are.
+     */
+    public static DynamicColor role(DynamicColor color) {
+        final MaterialDynamicColors colors = new MaterialDynamicColors();
+        return switch (color.name) {
+            case "primary_container" -> colors.surfaceContainerHighest();
+            case "on_primary_container" -> colors.primary();
+            default -> color;
+        };
+    }
+
+    private static TonalPalette grey(Hct seed) {
+        return TonalPalette.fromHueAndChroma(seed.getHue(), 0.0);
     }
 
     private static TonalPalette primary(Hct seed, boolean isDark) {
