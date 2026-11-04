@@ -121,6 +121,8 @@ public class ColorScheme {
                     specVersion, platform);
             case ThemeStyle.CMF -> new SchemeCmf(seedHcts, isDark, contrastLevel,
                     specVersion, platform);
+            case ThemeStyle.HARETIC -> new SchemeHaretic(seedHcts, isDark, contrastLevel,
+                    specVersion, platform);
 
 
             // SystemUI Schemes
