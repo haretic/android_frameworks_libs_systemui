@@ -58,6 +58,15 @@ public class SchemeHaretic extends DynamicScheme {
         return switch (color.name) {
             case "primary_container" -> colors.surfaceContainerHighest();
             case "on_primary_container" -> colors.primary();
+            // The shade's tiles where it can't blur: near black, solid, not a translucent
+            // grey over its background
+            case "surface_effect_1" -> new DynamicColor.Builder()
+                    .setName("surface_effect_1")
+                    .setPalette((s) -> s.neutralPalette)
+                    .setTone((s) -> s.isDark ? 6.0 : 98.0)
+                    .setIsBackground(true)
+                    .setOpacity((s) -> s.isDark ? 1.0 : .54)
+                    .build();
             default -> color;
         };
     }
