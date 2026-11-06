@@ -22,8 +22,10 @@ import java.util.List;
  * 80 is the seed, the tones on and around it following (near black on it, a deep container).
  * Everything else is neutral grey, the surfaces, the secondary roles and, by {@link #role}, the
  * primary container, which takes the seed's colour for what is on it: the seed is the only
- * colour, as the R1's orange body around its black screen. The tertiary and error stay tonal
- * spot's.
+ * colour, as the R1's orange body around its black screen. The tertiary is tonal spot's chroma on
+ * the seed's own hue, a softer tone of it rather than tonal spot's rotated hue (gold beside the
+ * orange, on the calculator's equals key, the timer's keys and the music app's buttons); the
+ * error stays tonal spot's.
  */
 public class SchemeHaretic extends DynamicScheme {
 
@@ -41,8 +43,9 @@ public class SchemeHaretic extends DynamicScheme {
                 specVersion,
                 primary(sourceColorHctList.get(0), isDark),
                 grey(sourceColorHctList.get(0)),
-                ColorSpecs.get(specVersion).getTertiaryPalette(Variant.TONAL_SPOT,
+                tertiary(ColorSpecs.get(specVersion).getTertiaryPalette(Variant.TONAL_SPOT,
                         sourceColorHctList.get(0), isDark, platform, contrastLevel),
+                        sourceColorHctList.get(0)),
                 grey(sourceColorHctList.get(0)),
                 grey(sourceColorHctList.get(0)),
                 ColorSpecs.get(specVersion).getErrorPalette(Variant.TONAL_SPOT,
@@ -73,6 +76,11 @@ public class SchemeHaretic extends DynamicScheme {
 
     private static TonalPalette grey(Hct seed) {
         return TonalPalette.fromHueAndChroma(seed.getHue(), 0.0);
+    }
+
+    /** Tonal spot's tertiary, its chroma, turned back to the seed's hue. */
+    private static TonalPalette tertiary(TonalPalette tonalSpot, Hct seed) {
+        return TonalPalette.fromHueAndChroma(seed.getHue(), tonalSpot.getChroma());
     }
 
     private static TonalPalette primary(Hct seed, boolean isDark) {
