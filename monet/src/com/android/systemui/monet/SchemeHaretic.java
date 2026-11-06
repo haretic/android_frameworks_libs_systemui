@@ -54,12 +54,23 @@ public class SchemeHaretic extends DynamicScheme {
 
     /**
      * The color the haretic style gives the role {@code color} is: the primary container is a
-     * grey container, the color on it the primary, the seed. Others are as they are.
+     * grey container, a tone off the highest, the color on it the primary, the seed. Others are as
+     * they are.
      */
     public static DynamicColor role(DynamicColor color) {
         final MaterialDynamicColors colors = new MaterialDynamicColors();
         return switch (color.name) {
-            case "primary_container" -> colors.surfaceContainerHighest();
+            // A step off the highest container, the same grey to the eye but not its value:
+            // Compose's contentColorFor matches the primary container before the surfaces, so
+            // as equal colours anything on the highest container, as Settings' and the Updater's
+            // round back buttons, took the orange meant for the primary container's content
+            case "primary_container" -> new DynamicColor.Builder()
+                    .setName("primary_container")
+                    .setPalette((s) -> s.neutralPalette)
+                    .setTone((s) -> colors.surfaceContainerHighest().getTone(s)
+                            + (s.isDark ? 1.0 : -1.0))
+                    .setIsBackground(true)
+                    .build();
             case "on_primary_container" -> colors.primary();
             // The shade's tiles where it can't blur: near black, solid, not a translucent
             // grey over its background
